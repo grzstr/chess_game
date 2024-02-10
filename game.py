@@ -32,12 +32,13 @@ class Piece:
         self.color = color
         self.pos = self.start_positions[color][type][pos_num]
         self.status = "alive"
-        self.id = id
+        self.id = id 
+        self.first_move = True
 
     def kill(self):
         self.status = "dead"
 
-    def calculate_pos(self):
+    def get_calculated_pos(self):
         for letter in self.pos:
             if letter in "ABCDEFGH":
                 x = ord(letter) - 65
@@ -46,8 +47,10 @@ class Piece:
 
         return (x, y)
 
+    def set_calculated_pos(self, x, y):
+        self.pos = chr(x + 65) + str(y + 1)
 
-class Player:
+class Player: 
     def __init__(self, color, nickname):
         self.color = color
         self.pieces = self.create_pieces(color)
@@ -73,11 +76,59 @@ class Player:
 
         return pieces
     
+    #Finding piece by name, it returns piece id
     def find_piece(self, name):
-        pass
+        type = name[1]
+        if len(name) == 2:
+            next = 0
+        else:
+            next = int(name[3])
 
-    def move(self, piece):
-        pass
+        loop = 0
+        for piece in self.pieces:
+            if piece.piece_type == type:
+                if loop == next:
+                    return piece.id
+                else:
+                    loop += 1
+
+    # Moving functions          
+    def move_pawn(self, id, decision):
+        x, y = self.pieces[id].get_calculated_pos()
+        if self.pieces[id].first_move == True:
+            if decision == 0:
+                y += 2
+            else:
+                y += 1
+        else:
+            y += 1
+        
+        pos = (x, y)
+        return pos
+        
+    def move(self, piece_name):
+        id = self.find_piece(piece_name)
+
+        if self.pieces[id].status == "alive":
+            if self.pieces[id].type == "P":
+                pos = self.move_pawn(id)
+            elif self.pieces[id].type == "R":
+                pos = self.move_rook(id)
+            elif self.pieces[id].type == "N":
+                pos = self.move_knight(id)
+            elif self.pieces[id].type == "B":
+                pos = self.move_bishop(id)
+            elif self.pieces[id].type == "Q":
+                pos = self.move_queen(id)
+            elif self.pieces[id].type == "K":
+                pos = self.move_king(id)
+            else:
+                pos = self.pieces[id].pos
+        else:
+            print("Piece is dead")
+            pos = self.pieces[id].pos
+
+        return pos
 
 class ChessGame:
     def __init__(self, player1="Player 1", player2="Player 2"):
@@ -105,12 +156,12 @@ class ChessGame:
             pieces_board.append(["*", "*", "*", "*", "*", "*", "*", "*"])
 
         for piece in self.player1.pieces:
-            x, y = piece.calculate_pos()
+            x, y = piece.get_calculated_pos()
             name, names = self.fix_name(colors[piece.color] + piece.type, names)
             pieces_board[y][x] = name
 
         for piece in self.player2.pieces:
-            x, y = piece.calculate_pos()
+            x, y = piece.get_calculated_pos()
             name, names = self.fix_name(colors[piece.color] + piece.type, names)
             pieces_board[y][x] = name
             
@@ -120,5 +171,5 @@ class ChessGame:
 
 game = ChessGame("Player 1", "Player 2")
 
-print(game.player1.pieces[0].calculate_pos())
+print(game.player1.pieces[0].get_calculated_pos())
 print(game.pieces_pos())
