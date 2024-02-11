@@ -56,6 +56,7 @@ class Player:
         self.pieces = self.create_pieces(color)
         self.score = 0
         self.nickname = nickname
+        self.board_limits = [0, 7]
 
     def create_pieces(self, color):
         pieces = []
@@ -86,7 +87,7 @@ class Player:
 
         loop = 0
         for piece in self.pieces:
-            if piece.piece_type == type:
+            if piece.type == type:
                 if loop == next:
                     return piece.id
                 else:
@@ -96,15 +97,56 @@ class Player:
     def move_pawn(self, id, decision):
         x, y = self.pieces[id].get_calculated_pos()
         if self.pieces[id].first_move == True:
-            if decision == 0:
+            if decision == 0 and y+2 <= self.board_limits[1]:
                 y += 2
-            else:
+            elif y+1 <= self.board_limits[1]:
                 y += 1
-        else:
+        elif y+1 <= self.board_limits[1]:
             y += 1
-        
         pos = (x, y)
         return pos
+    
+    def move_rook(self, id, decision):
+        x, y = self.pieces[id].get_calculated_pos()
+        if (decision >= 10 or decision < 20) and x+decision-10 <= self.board_limits[1]:
+            x += decision - 10
+        elif (decision >= 20 or decision < 30) and x-decision-20 >= self.board_limits[0]:
+            x -= decision - 20
+        elif (decision >= 30 or decision < 40) and y+decision-30 <= self.board_limits[1]:
+            y += decision - 30
+        elif (decision >= 40 or decision < 50) and y-decision-40 >= self.board_limits[0]:
+            y -= decision - 40
+        else:
+            print("Invalid move")
+        pos = (x, y)
+        return pos
+    
+    def move_knight(self, id, decision):
+        x, y = self.pieces[id].get_calculated_pos()
+        # UP AND RIGHT,LEFT
+        if (decision == 11 or decision == 12) and x+3 <= self.board_limits[1]:
+            x += 3
+            if  y+1 <= self.board_limits[1] and decision == 11:
+                y += 1
+            if y-1 >= self.board_limits[0] and decision == 12:
+                y -= 1
+        # DOWN AND RIGHT,LEFT
+        elif (decision == 21 or decision == 22) and x-3 >= self.board_limits[0]:
+            x -= 3
+            if  y+1 <= self.board_limits[1] and decision == 21:
+                y += 1
+            elif y-1 >= self.board_limits[0] and decision == 22:
+                y -= 1
+            else:
+                print("Invalid move")
+        elif (decision >= 30 or decision < 40) and y+decision-30 <= self.board_limits[1]:
+            y += decision - 30
+        elif (decision >= 40 or decision < 50) and y-decision-40 >= self.board_limits[0]:
+            y -= decision - 40
+        else:
+            print("Invalid move")
+        pos = (x, y)
+        return pos 
         
     def move(self, piece_name):
         id = self.find_piece(piece_name)
@@ -168,8 +210,9 @@ class ChessGame:
         return pieces_board
             
 
-
+"""
 game = ChessGame("Player 1", "Player 2")
 
 print(game.player1.pieces[0].get_calculated_pos())
 print(game.pieces_pos())
+"""
