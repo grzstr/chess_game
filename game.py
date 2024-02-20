@@ -50,14 +50,14 @@ class Piece:
                 y = int(letter) - 1
         
         if SHOW_CALCULATED_POS == True:
-            print(f"[PIECE CLASS] Original pos: {self.pos} || Calculated pos: {x}, {y}")
+            self.display_message(f"[PIECE CLASS] Original pos: {self.pos} || Calculated pos: {x}, {y}")
 
         return (x, y)
 
     def set_calculated_pos(self, x, y):
 
         if SHOW_CALCULATED_POS == True:
-            print(f"[PIECE CLASS] Original pos: {x}, {y} || Calculated pos: {self.pos}")
+            self.display_message(f"[PIECE CLASS] Original pos: {x}, {y} || Calculated pos: {self.pos}")
 
         self.pos = chr(x + 65) + str(y + 1)
 
@@ -124,13 +124,14 @@ class Player:
         moves.append(part_1)
         
         # Moves for killing        
-        if abs(x + 1) <= self.board_limits[0] and abs(y + 1) <= self.board_limits[1]:
+        if abs(x + 1) <= self.board_limits[1] and abs(y + 1) <= self.board_limits[1]:
             part_2.append([abs(x + 1), abs(y + 1)])
             moves.append(part_2)
         if abs(x - 1) >= self.board_limits[0] and abs(y + 1) <= self.board_limits[1]:
             part_3.append([abs(x - 1), abs(y + 1)])
             moves.append(part_3)
         
+        #print(moves)
         return moves
     
     def move_rook(self, x, y):
@@ -143,21 +144,25 @@ class Player:
         for i in range(8):
             # Move left
             if i < x:
-                part_1.append([i, y])
+                part_1.append([i, abs(y)])
             # Move right
             elif i > x:
-                part_2.append([i, y])
+                part_2.append([i, abs(y)])
             # Move down
             if i < y:
-                part_3.append([x, i])
+                part_3.append([abs(x), i])
             # Move up
             elif i > y:
-                part_4.append([x, i])
+                part_4.append([abs(x), i])
 
-        moves.append(part_1)
-        moves.append(part_2)
-        moves.append(part_3)
-        moves.append(part_4)
+        if len(part_1) > 0:
+            moves.append(part_1)
+        if len(part_2) > 0:
+            moves.append(part_2)
+        if len(part_3) > 0:
+            moves.append(part_3)
+        if len(part_4) > 0:
+            moves.append(part_4)
 
         return moves
     
@@ -165,11 +170,11 @@ class Player:
         moves = []
 
         # Moves right / up and down
-        if abs(x + 2) <= self.board_limits[0] and abs(y + 1) <= self.board_limits[1]:
+        if abs(x + 2) <= self.board_limits[1] and abs(y + 1) <= self.board_limits[1]:
             part_1 = []
             part_1.append([abs(x + 2), abs(y + 1)])
             moves.append(part_1)
-        if abs(x + 2) <= self.board_limits[0] and abs(y - 1) >= self.board_limits[0]:
+        if abs(x + 2) <= self.board_limits[1] and abs(y - 1) >= self.board_limits[0]:
             part_2 = []
             part_2.append([abs(x + 2), abs(y - 1)])    
             moves.append(part_2)
@@ -196,7 +201,7 @@ class Player:
             moves.append(part_6)
 
         # Moves down / right and left
-        if abs(x + 1) <= self.board_limits[0] and abs(y - 2) >= self.board_limits[0]:
+        if abs(x + 1) <= self.board_limits[1] and abs(y - 2) >= self.board_limits[0]:
             part_7 = []
             part_7.append([abs(x + 1), abs(y - 2)])
             moves.append(part_7)
@@ -206,6 +211,8 @@ class Player:
             part_8.append([abs(x - 1), abs(y - 2)])
             moves.append(part_8)
 
+        if SHOW_CALCULATED_POS == True:
+            self.display_message(f"Knight moves: {moves}, x: {x}, y: {y}")
         return moves   
 
     def move_bishop(self, x, y):
@@ -217,31 +224,33 @@ class Player:
 
         for i in range(8):
             # Move up-right
-            if x + i <= self.board_limits[0] and y + i <= self.board_limits[1]:
-                part_1.append([x + i, y + i])
+            if abs(x + i) <= self.board_limits[1] and abs(y + i) <= self.board_limits[1]:
+                part_1.append([abs(x + i), abs(y + i)])
             # Move up-left
-            if x - i >= self.board_limits[0] and y + i <= self.board_limits[1]:
-                part_2.append([x - i, y + i])
+            if abs(x - i) >= self.board_limits[0] and abs(y + i) <= self.board_limits[1]:
+                part_2.append([abs(x - i), abs(y + i)])
             # Move down-right
-            if x + i <= self.board_limits[0] and y - i >= self.board_limits[0]:
-                part_3.append([x + i, y - i])
+            if abs(x + i) <= self.board_limits[1] and abs(y - i) >= self.board_limits[0]:
+                part_3.append([abs(x + i), abs(y - i)])
             # Move down-left
-            if x - i >= self.board_limits[0] and y - i >= self.board_limits[0]:
-                part_4.append([x - i, y - i])
+            if abs(x - i) >= self.board_limits[0] and abs(y - i) >= self.board_limits[0]:
+                part_4.append([abs(x - i), abs(y - i)])
 
-        moves.append(part_1)
-        moves.append(part_2)
-        moves.append(part_3)
-        moves.append(part_4)
+        if len(part_1) > 0:
+            moves.append(part_1)
+        if len(part_2) > 0:
+            moves.append(part_2)
+        if len(part_3) > 0:
+            moves.append(part_3)
+        if len(part_4) > 0:
+            moves.append(part_4)
 
         return moves
 
     def move_queen(self, x, y):
         moves = []
-        parts = []
-        parts = self.move_rook(x, y)
-        parts.extend(self.move_bishop(x, y))
-        moves.append(parts)
+        moves = self.move_rook(x, y)
+        moves.extend(self.move_bishop(x, y))
         return moves
     
     def move_king(self, x, y):
@@ -258,7 +267,7 @@ class Player:
             part_2.append([abs(x), abs(y - 1)])
             moves.append(part_2)
         # Move right
-        if abs(x + 1) <= self.board_limits[0]:
+        if abs(x + 1) <= self.board_limits[1]:
             part_3 = []
             part_3.append([abs(x + 1), abs(y)])
             moves.append(part_3)
@@ -268,12 +277,12 @@ class Player:
             part_4.append([abs(x - 1), abs(y)])
             moves.append(part_4)
         # Move right up
-        if abs(x + 1) <= self.board_limits[0] and abs(y + 1) <= self.board_limits[1]:
+        if abs(x + 1) <= self.board_limits[1] and abs(y + 1) <= self.board_limits[1]:
             part_5 = []
             part_5.append([abs(x + 1), abs(y + 1)])
             moves.append(part_5)
         # Move right down
-        if abs(x + 1) <= self.board_limits[0] and abs(y - 1) >= self.board_limits[0]:
+        if abs(x + 1) <= self.board_limits[1] and abs(y - 1) >= self.board_limits[0]:
             part_6 = []
             part_6.append([abs(x + 1), abs(y - 1)])
             moves.append(part_6)
@@ -311,7 +320,7 @@ class Player:
             elif self.pieces[id].type == "K":
                 moves = self.move_king(x, y)
         else:
-            print("Piece is dead")
+            self.display_message("Piece is dead")
 
         if self.pieces[id].first_move == True:
             self.pieces[id].first_move = False
@@ -328,6 +337,7 @@ class ChessGame:
         self.start_data_time = now.strftime("%d-%m-%Y_%H-%M-%S")
         self.moves_counter = 0
         self.white_turn = True
+        self.message = ""
         self.black_turn = False
         self.update_flags = True
         self.end_game = False
@@ -365,13 +375,16 @@ class ChessGame:
 
         for piece in self.player1.pieces:
             x, y = piece.get_calculated_pos()
-            name, names = self.fix_name(colors[piece.color] + piece.type, names)
-            pieces_board[y][x] = name
+            if x >= 0 and x <= 7 and y >=0 and y <= 7:
+                name, names = self.fix_name(colors[piece.color] + piece.type, names)
+                pieces_board[y][x] = name
 
         for piece in self.player2.pieces:
             x, y = piece.get_calculated_pos()
-            name, names = self.fix_name(colors[piece.color] + piece.type, names)
-            pieces_board[y][x] = name
+            if x >= 0 and x <= 7 and y >=0 and y <= 7:
+                name, names = self.fix_name(colors[piece.color] + piece.type, names)
+                #print(f"Piece name: {name} || x: {x} || y: {y} || color: {piece.color} || type: {piece.type} || id: {piece.id} || pos: {piece.pos} || status: {piece.status} || first move: {piece.first_move} || nickname: {piece.piece_name}")
+                pieces_board[y][x] = name
             
         return pieces_board
     
@@ -385,8 +398,186 @@ class ChessGame:
 
         return moves
 
+    # Usuwanie nie potrzebnych ruchów z tablicy i ustawienie ich rosnąco
+    def set_begin_end_bishop(self, begin_pos, move_position):
+        if begin_pos[0] < move_position[0]:
+            if begin_pos[1] < move_position[1]:
+                x_end = move_position[0]
+                y_end = move_position[1]
+                x_begin = begin_pos[0]
+                y_begin = begin_pos[1]
+            else:
+                x_end = move_position[0]
+                y_end = begin_pos[1]
+                x_begin = begin_pos[0]
+                y_begin = move_position[1]
+        else:
+            if begin_pos[1] < move_position[1]:
+                x_end = begin_pos[0]
+                y_end = move_position[1]
+                x_begin = move_position[0]
+                y_begin = begin_pos[1]
+            else:
+                x_end = begin_pos[0]
+                y_end = begin_pos[1]
+                x_begin = move_position[0]
+                y_begin = move_position[1]            
+
+        return x_begin, x_end, y_begin, y_end
+
+    def set_begin_end_rook(self, begin_pos, move_position):
+        if begin_pos[0] == move_position[0]:
+            if begin_pos[1] < move_position[1]:
+                x_begin = begin_pos[0]
+                x_end = move_position[0]
+                y_begin = begin_pos[1]
+                y_end = move_position[1]
+            else:
+                x_begin = move_position[0]
+                x_end = begin_pos[0]
+                y_begin = move_position[1]
+                y_end = begin_pos[1]
+        elif begin_pos[1] == move_position[1]:
+            if begin_pos[0] < move_position[0]:
+                x_begin = begin_pos[0]
+                x_end = move_position[0]
+                y_begin = begin_pos[1]
+                y_end = move_position[1]
+            else:
+                x_begin = move_position[0]
+                x_end = begin_pos[0]
+                y_begin = move_position[1]
+                y_end = begin_pos[1]
+
+        return x_begin, x_end, y_begin, y_end
+
+    def set_begin_end_king(self, begin_pos, move_position):
+        if begin_pos[0] < move_position[0]:
+            if begin_pos[1] < move_position[1]:
+                x_end = move_position[0]
+                y_end = move_position[1]
+                x_begin = begin_pos[0]
+                y_begin = begin_pos[1]
+            else:
+                x_end = move_position[0]
+                y_end = begin_pos[1]
+                x_begin = begin_pos[0]
+                y_begin = move_position[1]
+        elif begin_pos[0] > move_position[0]:
+            if begin_pos[1] < move_position[1]:
+                x_end = begin_pos[0]
+                y_end = move_position[1]
+                x_begin = move_position[0]
+                y_begin = begin_pos[1]
+            else:
+                x_end = begin_pos[0]
+                y_end = begin_pos[1]
+                x_begin = move_position[0]
+                y_begin = move_position[1] 
+        elif begin_pos[0] == move_position[0]:
+            if begin_pos[1] < move_position[1]:
+                x_begin = begin_pos[0]
+                x_end = move_position[0]
+                y_begin = begin_pos[1]
+                y_end = move_position[1]
+            else:
+                x_begin = move_position[0]
+                x_end = begin_pos[0]
+                y_begin = move_position[1]
+                y_end = begin_pos[1]
+        elif begin_pos[1] == move_position[1]:
+            if begin_pos[0] < move_position[0]:
+                x_begin = begin_pos[0]
+                x_end = move_position[0]
+                y_begin = begin_pos[1]
+                y_end = move_position[1]
+            else:
+                x_begin = move_position[0]
+                x_end = begin_pos[0]
+                y_begin = move_position[1]
+                y_end = begin_pos[1]
+
+        return x_begin, x_end, y_begin, y_end
+
+    def filtr_moves(self, move, x_begin, x_end, y_begin, y_end):
+        changed_moves = []
+        for pos in move:
+            if pos[0] >= x_begin and pos[0] <= x_end and pos[1] >= y_begin and pos[1] <= y_end:
+                changed_moves.append(pos)
+            
+        return changed_moves
+
+    def eliminate_moves(self, move, move_position, piece_name):
+        if piece_name[0] == "w":
+            id = self.player1.get_piece_id(piece_name)
+            chosen_player = self.player1
+        else:
+            id = self.player2.get_piece_id(piece_name) - 16
+            chosen_player = self.player2
+
+        begin_pos = chosen_player.pieces[id].get_calculated_pos()
+        if chosen_player.pieces[id].type == "N" or chosen_player.pieces[id].type == "P":
+            return move
+        elif chosen_player.pieces[id].type == "B":
+            x_begin, x_end, y_begin, y_end = self.set_begin_end_bishop(begin_pos, move_position)
+            move = self.filtr_moves(move, x_begin, x_end, y_begin, y_end)
+        elif chosen_player.pieces[id].type == "R":
+            x_begin, x_end, y_begin, y_end = self.set_begin_end_rook(begin_pos, move_position)
+            move = self.filtr_moves(move, x_begin, x_end, y_begin, y_end)            
+        elif chosen_player.pieces[id].type == "Q" or chosen_player.pieces[id].type == "K":
+            x_begin, x_end, y_begin, y_end = self.set_begin_end_king(begin_pos, move_position)
+            move = self.filtr_moves(move, x_begin, x_end, y_begin, y_end)
+
+        for i in range(len(move)):
+            if move[i][0] == begin_pos[0] and move[i][1] == begin_pos[1]:
+                move.pop(i)
+                break
+
+        return move 
+
+    def kill_piece(self, piece_name, move_position, pieces_pos):
+        # Check if piece is the same color
+        if piece_name[0] == pieces_pos[move_position[1]][move_position[0]][0]:
+            if SHOW_CALCULATED_POS == True:
+                self.display_message(f"Invalid move - you can't kill your own piece [{move_position[0]}][{move_position[1]}] Piece you want to move {piece_name} Piece you want to kill {pieces_pos[move_position[1]][move_position[0]]}")
+                self.update_flags = False
+            else:
+                self.display_message(f"Invalid move - you can't kill your own piece")
+                self.update_flags = False
+            return False
+        else:
+            if pieces_pos[move_position[1]][move_position[0]] == "*":
+                self.display_message("Invalid move - you can't kill nothing")
+                self.update_flags = False
+                return False
+            else:
+                if piece_name[0] == "w":
+                    id = self.player2.get_piece_id(pieces_pos[move_position[1]][move_position[0]]) - 16
+                    self.player2.kill_piece(id)
+                    if self.player2.pieces[id].type == "K":
+                        self.display_message("White wins")
+                        self.end_game = True
+                        return True
+                    id = self.player1.get_piece_id(piece_name)
+                    self.player1.score += self.pieces_values[self.player1.pieces[id].type]
+                    self.player1.pieces[id].set_calculated_pos(move_position[0], move_position[1])
+                    self.display_message(f"You killed a piece black {self.player2.pieces[id].piece_name}")
+                    return True
+                else:
+                    id = self.player1.get_piece_id(pieces_pos[move_position[1]][move_position[0]])
+                    self.player1.kill_piece(id)
+                    if self.player1.pieces[id].type == "K":
+                        self.display_message("Black wins")
+                        self.end_game = True
+                        return True
+                    id = self.player2.get_piece_id(piece_name) - 16
+                    self.player2.score += self.pieces_values[self.player1.pieces[id].type]
+                    self.player2.pieces[id].set_calculated_pos(move_position[0], move_position[1])
+                    self.display_message(f"You killed a piece white {self.player1.pieces[id].piece_name}")
+                return True
+
     def move(self, piece_name, move_position):
-        self.updar_flags = True
+        #self.update_flags = True
         moves = self.get_piece_moves(piece_name)
         pieces_pos = self.pieces_pos()
 
@@ -396,39 +587,34 @@ class ChessGame:
                 # Check if move is valid
                 if moves[i][j][0] == move_position[0] and moves[i][j][1] == move_position[1]:
                     move_is_valid = True
-                    if pieces_pos[move_position[1]][move_position[0]] != "*":
-                        # Check if piece is the same color
-                        if piece_name[0] == pieces_pos[move_position[1]][move_position[0]][0]:
-                            if SHOW_CALCULATED_POS == True:
-                                print(f"Invalid move - you can't kill your own piece [{move_position[0]}][{move_position[1]}] Piece you want to move {piece_name} Piece you want to kill {pieces_pos[move_position[1]][move_position[0]]}")
-                                self.update_flags = False
-                            else:
-                                print("Invalid move - you can't kill your own piece")
-                                self.update_flags = False
+
+                    not_eliminated_moves = self.eliminate_moves(moves[i], move_position, piece_name)
+                    if len(not_eliminated_moves) == 0:
+                        self.display_message("Invalid move - you can't move there")
+                        self.update_flags = False
+                        break
+                    any_piece = 0
+                    for not_eliminated_move in not_eliminated_moves:
+                        if pieces_pos[not_eliminated_move[1]][not_eliminated_move[0]] != "*":
+                            any_piece += 1
+                    if any_piece >= 2:
+                        self.display_message("Invalid move - you can't move there")
+                        self.update_flags = False
+                        break
+                    elif any_piece == 1:
+                        is_killed = self.kill_piece(piece_name, move_position, pieces_pos)
+                        if is_killed == True:
                             break
                         else:
-                            if piece_name[0] == "w":
-                                id = self.player2.get_piece_id(pieces_pos[move_position[1]][move_position[0]])
-                                self.player2.kill_piece(id)
-                                if self.player2.pieces[id].type == "K":
-                                    print("White wins")
-                                    self.end_game = True
-                                    break
-                                self.player1.score += self.pieces_values[self.player1.pieces[id].type]
-                                self.player2.pieces[id].set_calculated_pos(move_position[0], move_position[1])
-                                print(f"You killed a piece {piece_name}")
-                                
-                            else:
-                                id = self.player1.get_piece_id(pieces_pos[move_position[1]][move_position[0]])
-                                self.player1.kill_piece(id)
-                                if self.player1.pieces[id].type == "K":
-                                    print("Black wins")
-                                    self.end_game = True
-                                    break
-                                self.player2.score += self.pieces_values[self.player1.pieces[id].type]
-                                self.player1.pieces[id].set_calculated_pos(move_position[0], move_position[1])
-                                print(f"You killed a piece {piece_name}")
+                            self.display_message("Invalid move - you can't move there")
+                            self.update_flags = False
                             break
+                    # Check if there is a piece on the position
+                    if pieces_pos[move_position[1]][move_position[0]] != "*":
+                        is_killed = self.kill_piece(piece_name, move_position, pieces_pos)
+                        if is_killed == True:
+                            break
+                    # If there is no piece on the position
                     else:
                         if piece_name[0] == "w":
                             id = self.player1.get_piece_id(piece_name)
@@ -441,7 +627,7 @@ class ChessGame:
                     
 
         if move_is_valid == False:
-            print("Invalid move - you can't move there")
+            self.display_message("Invalid move - you can't move there")
             self.update_flags = False
         else:
             self.moves_counter += 1
@@ -460,7 +646,7 @@ class ChessGame:
                 y = int(letter) - 1
         
         if SHOW_CALCULATED_POS == True:
-            print(f"[PLAYER CLASS] Original pos: {pos} || Calculated pos: {x}, {y}")
+            self.display_message(f"[PLAYER CLASS] Original pos: {pos} || Calculated pos: {x}, {y}")
 
         return (x, y)
 
@@ -469,18 +655,26 @@ class ChessGame:
         x, y = self.calculate_pos(pos)
 
         return pieces_pos[y][x]
+    
+    def get_message(self):
+        return self.message
+
+    def display_message(self, message):
+        print(message)
+        self.message = message
 
     def white_move(self, piece_pos, move_position):
+        self.message = ""
         if self.end_game == True:
-            print("Game is over")
+            self.display_message("Game is over")
             return False
         else:
             piece_name = self.get_piece_by_pos(piece_pos)
             if piece_name == "*":
-                print("There is no piece on this position")
+                self.display_message("There is no piece on this position")
                 return False
             elif piece_name[0] == "b":
-                print("It's not your piece")
+                self.display_message("It's not your piece")
                 return False
             else:
                 if self.white_turn == True:
@@ -492,20 +686,21 @@ class ChessGame:
                         self.black_turn = True
                     self.update_flags = True
                 else:
-                    print("It's not your turn")
+                    self.display_message("It's not your turn")
                     return False
             
     def black_move(self, piece_pos, move_position):
+        self.message = ""
         if self.end_game == True:
-            print("Game is over")
+            self.display_message("Game is over")
             return False
         else:
             piece_name = self.get_piece_by_pos(piece_pos)
             if piece_name == "*":
-                print("There is no piece on this position")
+                self.display_message("There is no piece on this position")
                 return False
             elif piece_name[0] == "w":
-                print("It's not your piece")
+                self.display_message("It's not your piece")
                 return False
             else:
                 if self.black_turn == True:
@@ -517,5 +712,5 @@ class ChessGame:
                         self.white_turn = True
                     self.update_flags = True
                 else:
-                    print("It's not your turn")
+                    self.display_message("It's not your turn")
                     return False
