@@ -10,7 +10,8 @@ This Python program implements a chess game with a graphical user interface crea
 - Two-player mode for local matches.
 - Standard chess rules applied.
 
+![Alt Text](./gamplay.png)
+
 ## Requirements
 Make sure you have Python installed. The program is compatible with Python 3.
-
 
